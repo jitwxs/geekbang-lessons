@@ -1,6 +1,7 @@
 package org.geektimes.projects.user.repository;
 
 import org.geektimes.function.ThrowableFunction;
+import org.geektimes.projects.user.context.ComponentContext;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 
@@ -33,8 +34,8 @@ public class DatabaseUserRepository implements UserRepository {
 
     private final DBConnectionManager dbConnectionManager;
 
-    public DatabaseUserRepository(DBConnectionManager dbConnectionManager) {
-        this.dbConnectionManager = dbConnectionManager;
+    public DatabaseUserRepository() {
+        this.dbConnectionManager = ComponentContext.getInstance().getComponent("bean/DBConnectionManager");
     }
 
     private Connection getConnection() {
@@ -43,7 +44,20 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public boolean save(User user) {
-        return false;
+        try (Connection connection = getConnection()) {
+            final PreparedStatement statement = connection.prepareStatement(INSERT_USER_DML_SQL);
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getEmail());
+            statement.setString(4, user.getPhoneNumber());
+
+            statement.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            logger.log(Level.FINE, e.getMessage());
+            return false;
+        }
     }
 
     @Override

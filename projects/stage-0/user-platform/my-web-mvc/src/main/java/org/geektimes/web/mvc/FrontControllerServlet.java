@@ -4,19 +4,14 @@ import org.apache.commons.lang.StringUtils;
 import org.geektimes.web.mvc.controller.Controller;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
-import org.geektimes.web.mvc.header.CacheControlHeaderWriter;
-import org.geektimes.web.mvc.header.annotation.CacheControl;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import java.io.IOException;
@@ -141,15 +136,28 @@ public class FrontControllerServlet extends HttpServlet {
                         // RequestDispatcher requestDispatcher = request.getRequestDispatcher(viewPath);
                         // ServletContext -> RequestDispatcher forward
                         // ServletContext -> RequestDispatcher 必须以 "/" 开头
-                        ServletContext servletContext = request.getServletContext();
-                        if (!viewPath.startsWith("/")) {
-                            viewPath = "/" + viewPath;
-                        }
-                        RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher(viewPath);
-                        requestDispatcher.forward(request, response);
-                        return;
+                        getRequestDispatcher(request, viewPath).forward(request, response);
                     } else if (controller instanceof RestController) {
-                        // TODO
+                        final RestController restController = RestController.class.cast(controller);
+
+                        final RestResponse restResponse = restController.execute(request, response);
+
+                        if(restResponse.getCode() != 0) {
+                            // failure
+                            request.setAttribute("restCode", restResponse.getCode());
+                            request.setAttribute("restMessage", restResponse.getMessage());
+
+                            getRequestDispatcher(request, "default-failure.jsp").forward(request, response);
+                        } else {
+                            // success
+                            if(StringUtils.isNotBlank(restResponse.getForwardPath())) {
+                                // forward
+                                getRequestDispatcher(request, restResponse.getForwardPath()).forward(request, response);
+                            } else {
+                                // default
+                                getRequestDispatcher(request, "default-success.jsp").forward(request, response);
+                            }
+                        }
                     }
 
                 }
@@ -163,15 +171,13 @@ public class FrontControllerServlet extends HttpServlet {
         }
     }
 
-//    private void beforeInvoke(Method handleMethod, HttpServletRequest request, HttpServletResponse response) {
-//
-//        CacheControl cacheControl = handleMethod.getAnnotation(CacheControl.class);
-//
-//        Map<String, List<String>> headers = new LinkedHashMap<>();
-//
-//        if (cacheControl != null) {
-//            CacheControlHeaderWriter writer = new CacheControlHeaderWriter();
-//            writer.write(headers, cacheControl.value());
-//        }
-//    }
+
+    private RequestDispatcher getRequestDispatcher(HttpServletRequest request, String viewPath) {
+        ServletContext servletContext = request.getServletContext();
+        if (!viewPath.startsWith("/")) {
+            viewPath = "/" + viewPath;
+        }
+
+        return servletContext.getRequestDispatcher(viewPath);
+    }
 }
