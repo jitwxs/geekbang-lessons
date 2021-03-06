@@ -4,9 +4,14 @@
 
 >参考链接：https://github.com/mercyblitz/geekbang-lessons
 
-## Homework
+## Branch Management
 
-每周作业内容将会再次说明，包括作业要求，以及个人提交的作业所在的分支及验证方式，方便助教批阅。
+| Branch     | Description        |
+| ---------- | ------------------ |
+| master     | 同步 Fork 仓库代码 |
+| homework/* | 作业分支           |
+
+## Homework
 
 ### 2021-02-27
 
@@ -16,11 +21,7 @@
 - 通过 Controller -Service -Repository 实现 （数据库实现）
 - （非必须）JNDI 的方式获取数据库源 DataSource
 
-**二、作业分支**
-
-`homework/0227`
-
-**三、验证方式**
+**二、验证方式**
 
 （1）切换分支并打包
 
