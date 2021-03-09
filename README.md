@@ -23,7 +23,7 @@
 
 **二、验证方式**
 
-（1）切换分支并打包
+（1）切换分支并打包运行项目
 
 ```shell
 git checkout homework/0227
@@ -31,19 +31,41 @@ git checkout homework/0227
 cd projects/stage-0/user-platform
 
 mvn clean install
-```
 
-（2）运行项目
-
-```
 java -jar xxx.jar
 ```
 
-（3）访问注册页面
+（2）访问注册页面
 
 ```shell
 http://127.0.0.1:8080/register
 ```
 
-（4）注册成功后跳转至成功页面
+（3）注册成功后跳转至成功页面
+
+### 2021-03-06
+
+**一、作业要求**
+
+通过课堂上的简易版依赖注入和依赖查找，实现用户注入功能
+
+- 通过 UserService 实现用户注册
+- 注册用户需要校验
+  - ID 必须大于 0 的整数
+  - 密码 6 - 32 位
+  - 电话号码：采用中国大陆方式（11位校验）
+
+**二、验证方式**
+
+（1）切换分支并打包运行项目
+
+```shell
+git checkout homework/0306
+
+cd projects/stage-0/user-platform
+
+mvn clean install
+
+java -jar xxx.jar
+```
 
