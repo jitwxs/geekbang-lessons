@@ -47,3 +47,5 @@ compiler/.gradle/*
 # Tomcat
 .extract
 .flattened-pom.xml
+
+db/
