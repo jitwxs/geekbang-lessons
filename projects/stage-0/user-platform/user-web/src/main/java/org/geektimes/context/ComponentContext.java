@@ -86,17 +86,18 @@ public class ComponentContext {
      */
     protected void initializeComponents() {
         componentsMap.values().forEach(component -> {
-            Class<?> componentClass = component.getClass();
             // 注入阶段 - {@link Resource}
-            injectComponents(component, componentClass);
+            injectComponents(component);
             // 初始阶段 - {@link PostConstruct}
-            processPostConstruct(component, componentClass);
-            // TODO 实现销毁阶段 - {@link PreDestroy}
-            processPreDestroy();
+            processPostConstruct(component);
+            // 销毁阶段 - {@link PreDestroy}
+            processPreDestroy(component);
         });
     }
 
-    private void injectComponents(Object component, Class<?> componentClass) {
+    private void injectComponents(Object component) {
+        final Class<?> componentClass = component.getClass();
+
         Stream.of(componentClass.getDeclaredFields())
                 .filter(field -> {
                     int mods = field.getModifiers();
@@ -115,7 +116,8 @@ public class ComponentContext {
         });
     }
 
-    private void processPostConstruct(Object component, Class<?> componentClass) {
+    private void processPostConstruct(Object component) {
+        final Class<?> componentClass = component.getClass();
         Stream.of(componentClass.getMethods())
                 .filter(method ->
                         !Modifier.isStatic(method.getModifiers()) &&      // 非 static
@@ -131,8 +133,22 @@ public class ComponentContext {
         });
     }
 
-    private void processPreDestroy() {
-        // TODO
+    private void processPreDestroy(Object component) {
+        final Class<?> componentClass = component.getClass();
+
+        Stream.of(componentClass.getMethods())
+                .filter(method ->
+                        !Modifier.isStatic(method.getModifiers()) &&      // 非 static
+                                method.getParameterCount() == 0 &&        // 没有参数
+                                method.isAnnotationPresent(PreDestroy.class) // 标注 @PreDestroy
+                ).forEach(method -> {
+            // 执行目标方法
+            try {
+                method.invoke(component);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**
