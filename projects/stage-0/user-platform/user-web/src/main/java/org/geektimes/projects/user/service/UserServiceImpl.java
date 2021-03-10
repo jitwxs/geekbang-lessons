@@ -1,11 +1,15 @@
 package org.geektimes.projects.user.service;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.geektimes.projects.user.domain.User;
-import org.geektimes.projects.user.sql.LocalTransactional;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
 
@@ -15,19 +19,40 @@ public class UserServiceImpl implements UserService {
     @Resource(name = "bean/Validator")
     private Validator validator;
 
+    private final Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
+
     @Override
-    // 默认需要事务
-    @LocalTransactional
     public boolean register(User user) {
-        // before process
-//        EntityTransaction transaction = entityManager.getTransaction();
-//        transaction.begin();
+        final ConstraintViolation<User> violation = validator.validate(user).stream().findFirst().orElse(null);
+        if(violation != null) {
+            logger.log(Level.WARNING, "Register Failed, reason: " + violation.getMessage());
+            return false;
+        }
+
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+
+            entityManager.persist(user);
+
+            transaction.commit();
+
+            logger.info("Register Success, user: " + user);
+
+            return true;
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Register Exception, error: " + ExceptionUtils.getMessage(e));
+
+            transaction.rollback();
+
+            return false;
+        }
 
         // 主调用
-        entityManager.persist(user);
+//        entityManager.persist(user);
 
         // 调用其他方法方法
-        update(user); // 涉及事务
+//        update(user); // 涉及事务
         // register 方法和 update 方法存在于同一线程
         // register 方法属于 Outer 事务（逻辑）
         // update 方法属于 Inner 事务（逻辑）
@@ -53,7 +78,7 @@ public class UserServiceImpl implements UserService {
         // after process
         // transaction.commit();
 
-        return false;
+//        return false;
     }
 
     @Override
@@ -62,7 +87,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @LocalTransactional
     public boolean update(User user) {
         return false;
     }
