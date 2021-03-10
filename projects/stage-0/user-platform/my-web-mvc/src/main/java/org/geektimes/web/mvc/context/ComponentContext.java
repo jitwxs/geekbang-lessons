@@ -1,7 +1,7 @@
-package org.geektimes.context;
+package org.geektimes.web.mvc.context;
 
-import org.geektimes.function.ThrowableAction;
-import org.geektimes.function.ThrowableFunction;
+import org.geektimes.web.mvc.function.ThrowableAction;
+import org.geektimes.web.mvc.function.ThrowableFunction;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -73,7 +73,7 @@ public class ComponentContext {
         // 遍历获取所有的组件名称
         List<String> componentNames = listAllComponentNames();
         // 通过依赖查找，实例化对象（ Tomcat BeanFactory setter 方法的执行，仅支持简单类型）
-        componentNames.forEach(name -> componentsMap.put(name, lookupComponent(name)));
+        componentNames.forEach(name -> componentsMap.put(name, executeInContext(context -> context.lookup(name))));
     }
 
     /**
@@ -85,7 +85,7 @@ public class ComponentContext {
      * </ol>
      */
     protected void initializeComponents() {
-        componentsMap.values().forEach(component -> {
+        componentsMap.forEach((name, component) -> {
             // 注入阶段 - {@link Resource}
             injectComponents(component);
             // 初始阶段 - {@link PostConstruct}
@@ -95,25 +95,21 @@ public class ComponentContext {
         });
     }
 
-    private void injectComponents(Object component) {
+    public void injectComponents(Object component) {
         final Class<?> componentClass = component.getClass();
 
         Stream.of(componentClass.getDeclaredFields())
-                .filter(field -> {
-                    int mods = field.getModifiers();
-                    return !Modifier.isStatic(mods) &&
-                            field.isAnnotationPresent(Resource.class);
-                }).forEach(field -> {
-            Resource resource = field.getAnnotation(Resource.class);
-            String resourceName = resource.name();
-            Object injectedObject = lookupComponent(resourceName);
-            field.setAccessible(true);
-            try {
-                // 注入目标对象
-                field.set(component, injectedObject);
-            } catch (IllegalAccessException e) {
-            }
-        });
+                .filter(field -> !Modifier.isStatic(field.getModifiers()) && field.isAnnotationPresent(Resource.class))
+                .forEach(field -> {
+                    Object injectedObject = getComponent(field.getAnnotation(Resource.class).name());
+                    field.setAccessible(true);
+                    try {
+                        // 注入目标对象
+                        field.set(component, injectedObject);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     private void processPostConstruct(Object component) {
@@ -189,10 +185,6 @@ public class ComponentContext {
             }
         }
         return result;
-    }
-
-    protected <C> C lookupComponent(String name) {
-        return executeInContext(context -> (C) context.lookup(name));
     }
 
     /**
