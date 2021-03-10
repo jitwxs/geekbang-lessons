@@ -8,8 +8,6 @@ import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static javax.persistence.GenerationType.AUTO;
-
 /**
  * 用户领域对象
  *
@@ -20,7 +18,6 @@ import static javax.persistence.GenerationType.AUTO;
 public class User implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = AUTO)
     @Min(1)
     private Long id;
 

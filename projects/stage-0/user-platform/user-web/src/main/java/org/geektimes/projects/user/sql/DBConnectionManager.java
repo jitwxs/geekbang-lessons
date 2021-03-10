@@ -25,22 +25,6 @@ public class DBConnectionManager { // JNDI Component
     @Resource(name = "bean/EntityManager")
     private EntityManager entityManager;
 
-//    public Connection getConnection() {
-//        ComponentContext context = ComponentContext.getInstance();
-//        // 依赖查找
-//        DataSource dataSource = context.getComponent("jdbc/UserPlatformDB");
-//        Connection connection = null;
-//        try {
-//            connection = dataSource.getConnection();
-//        } catch (SQLException e) {
-//            logger.log(Level.SEVERE, e.getMessage());
-//        }
-//        if (connection != null) {
-//            logger.log(Level.INFO, "获取 JNDI 数据库连接成功！");
-//        }
-//        return connection;
-//    }
-
     public EntityManager getEntityManager() {
         logger.info("当前 EntityManager 实现类：" + entityManager.getClass().getName());
         return entityManager;
@@ -60,31 +44,10 @@ public class DBConnectionManager { // JNDI Component
         return connection;
     }
 
-
-//    private Connection connection;
-//
-//    public void setConnection(Connection connection) {
-//        this.connection = connection;
-//    }
-//
-//    public Connection getConnection() {
-//        return this.connection;
-//    }
-
-    public void releaseConnection() {
-//        if (this.connection != null) {
-//            try {
-//                this.connection.close();
-//            } catch (SQLException e) {
-//                throw new RuntimeException(e.getCause());
-//            }
-//        }
-    }
-
     public static final String DROP_USERS_TABLE_DDL_SQL = "DROP TABLE users";
 
     public static final String CREATE_USERS_TABLE_DDL_SQL = "CREATE TABLE users(" +
-            "id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+            "id BIGINT NOT NULL PRIMARY KEY, " +
             "name VARCHAR(16) NOT NULL, " +
             "password VARCHAR(64) NOT NULL, " +
             "email VARCHAR(64) NOT NULL, " +

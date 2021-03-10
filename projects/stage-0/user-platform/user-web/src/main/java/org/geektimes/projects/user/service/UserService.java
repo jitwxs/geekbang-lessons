@@ -1,6 +1,7 @@
 package org.geektimes.projects.user.service;
 
 import org.geektimes.projects.user.domain.User;
+import org.geektimes.web.mvc.RestResponse;
 
 /**
  * 用户服务
@@ -13,7 +14,7 @@ public interface UserService {
      * @param user 用户对象
      * @return 成功返回<code>true</code>
      */
-    boolean register(User user);
+    RestResponse register(User user);
 
     /**
      * 注销用户

@@ -1,51 +1,37 @@
 package org.geektimes.projects.user.service;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.geektimes.projects.user.domain.User;
+import org.geektimes.projects.user.repository.DatabaseUserRepository;
+import org.geektimes.web.mvc.RestResponse;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
-
-    @Resource(name = "bean/EntityManager")
-    private EntityManager entityManager;
-
     @Resource(name = "bean/Validator")
     private Validator validator;
+
+    private static final DatabaseUserRepository databaseUserRepository = new DatabaseUserRepository();
 
     private final Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
 
     @Override
-    public boolean register(User user) {
+    public RestResponse register(User user) {
+        // basic check
         final ConstraintViolation<User> violation = validator.validate(user).stream().findFirst().orElse(null);
         if(violation != null) {
             logger.log(Level.WARNING, "Register Failed, reason: " + violation.getMessage());
-            return false;
+            return RestResponse.failure(-1, violation.getMessage());
         }
 
-        EntityTransaction transaction = entityManager.getTransaction();
-        try {
-            transaction.begin();
-
-            entityManager.persist(user);
-
-            transaction.commit();
-
-            logger.info("Register Success, user: " + user);
-
-            return true;
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Register Exception, error: " + ExceptionUtils.getMessage(e));
-
-            transaction.rollback();
-
-            return false;
+        // persist
+        if(databaseUserRepository.save(user)) {
+            return RestResponse.success("您的用户ID是：" + user.getId(), "home.jsp");
+        } else {
+            return RestResponse.failure(-1, "save failed");
         }
 
         // 主调用
@@ -93,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User queryUserById(Long id) {
-        return null;
+        return databaseUserRepository.getById(id);
     }
 
     @Override
