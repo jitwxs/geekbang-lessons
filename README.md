@@ -69,3 +69,37 @@ mvn clean install
 java -jar xxx.jar
 ```
 
+（2）访问注册页面
+
+```
+http://127.0.0.1:8080/register
+```
+
+（3）注册失败后跳转至错误页面，并打印错误原因。例如当手机号码不合法时，页面输出：
+
+```
+Default Failure !
+Code: -1
+Message: Phone Number Illegal
+```
+
+（4）注册成功后跳转至成功页面，并打印您的用户ID。例如：
+
+```
+Login Success !
+Message: 您的用户ID是：1615385567184
+```
+
+（5）新开一个窗口，复制您的用户ID，并请求以下 URL：
+
+```
+http://127.0.0.1:8080/api/user?id=1615385567184
+```
+
+页面将打印您的信息，例如：
+
+```
+Login Success !
+Message: User{id=1615385567184, name='zhangsan', password='12313131', email='1111@qq.com', phoneNumber='15932123456'}
+```
+
