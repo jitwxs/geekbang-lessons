@@ -6,6 +6,7 @@ import org.geektimes.web.mvc.context.ComponentContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 
@@ -23,9 +24,9 @@ public class TestingListener implements ServletContextListener {
         DBConnectionManager dbConnectionManager = context.getComponent("bean/DBConnectionManager");
 
         try(Connection connection = dbConnectionManager.getConnection()) {
-            initTable(connection);
+            initTable(connection.createStatement());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         logger.info("所有的 JNDI 组件名称：[");
@@ -33,12 +34,16 @@ public class TestingListener implements ServletContextListener {
         logger.info("]");
     }
 
-    private void initTable(Connection connection) throws Exception {
-        Statement statement = connection.createStatement();
+    private void initTable(Statement statement) {
         // 删除 users 表
-        statement.execute(DBConnectionManager.DROP_USERS_TABLE_DDL_SQL);
+        try {
+            statement.execute(DBConnectionManager.DROP_USERS_TABLE_DDL_SQL);
+        } catch (SQLException ignored) {}
+
         // 创建 users 表
-        statement.execute(DBConnectionManager.CREATE_USERS_TABLE_DDL_SQL);
+        try {
+            statement.execute(DBConnectionManager.CREATE_USERS_TABLE_DDL_SQL);
+        } catch (SQLException ignored) {}
     }
 
     @Override
