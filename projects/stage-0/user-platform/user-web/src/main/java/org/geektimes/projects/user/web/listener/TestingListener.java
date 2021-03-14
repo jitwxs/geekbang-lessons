@@ -1,10 +1,15 @@
 package org.geektimes.projects.user.web.listener;
 
+import org.geektimes.projects.user.domain.User;
+import org.geektimes.projects.user.management.UserManager;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 import org.geektimes.web.mvc.context.ComponentContext;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.lang.management.ManagementFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,6 +37,12 @@ public class TestingListener implements ServletContextListener {
         logger.info("所有的 JNDI 组件名称：[");
         context.getComponentNames().forEach(logger::info);
         logger.info("]");
+
+        try {
+            registerJmxBean();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void initTable(Statement statement) {
@@ -44,6 +55,26 @@ public class TestingListener implements ServletContextListener {
         try {
             statement.execute(DBConnectionManager.CREATE_USERS_TABLE_DDL_SQL);
         } catch (SQLException ignored) {}
+    }
+
+    private void registerJmxBean() throws Exception {
+        // 获取平台 MBean Server
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        // 为 UserMXBean 定义 ObjectName
+        ObjectName objectName = new ObjectName("org.geektimes.projects.user.management:type=User");
+        // 创建 UserMBean 实例
+        final UserManager userManager = mockUserManager();
+        mBeanServer.registerMBean(userManager, objectName);
+    }
+
+    private UserManager mockUserManager() {
+        User user = new User();
+        user.setId(System.currentTimeMillis());
+        user.setName("小马哥");
+        user.setPassword("******");
+        user.setEmail("mercyblitz@gmail.com");
+        user.setPhoneNumber("abcdefg");
+        return new UserManager(user);
     }
 
     @Override
