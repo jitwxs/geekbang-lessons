@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Java 系统属性配置 Source
+ * 操作系统环境变量 Source
  */
-public class JavaSystemPropertiesConfigSource implements ConfigSource {
+public class OSEnvConfigSource implements ConfigSource {
 
     /**
      * Java 系统属性最好通过本地变量保存，使用 Map 保存，尽可能运行期不去调整
@@ -17,9 +17,8 @@ public class JavaSystemPropertiesConfigSource implements ConfigSource {
      */
     private final Map<String, String> properties;
 
-    public JavaSystemPropertiesConfigSource() {
-        Map systemProperties = System.getProperties();
-        this.properties = new HashMap<>(systemProperties);
+    public OSEnvConfigSource() {
+        this.properties = new HashMap<>(System.getenv());
     }
 
     @Override
@@ -39,6 +38,6 @@ public class JavaSystemPropertiesConfigSource implements ConfigSource {
 
     @Override
     public int getOrdinal() {
-        return 1;
+        return 0;
     }
 }
