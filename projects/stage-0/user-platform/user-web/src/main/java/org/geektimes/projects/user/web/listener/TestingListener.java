@@ -1,5 +1,7 @@
 package org.geektimes.projects.user.web.listener;
 
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.management.UserManager;
 import org.geektimes.projects.user.sql.DBConnectionManager;
@@ -13,6 +15,7 @@ import java.lang.management.ManagementFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -43,6 +46,8 @@ public class TestingListener implements ServletContextListener {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        testMicroprofile(context.getComponent("bean/DefaultConfigProviderResolver"));
     }
 
     private void initTable(Statement statement) {
@@ -65,6 +70,14 @@ public class TestingListener implements ServletContextListener {
         // 创建 UserMBean 实例
         final UserManager userManager = mockUserManager();
         mBeanServer.registerMBean(userManager, objectName);
+    }
+
+    private void testMicroprofile(final ConfigProviderResolver resolver) {
+        final Config config = resolver.getConfig();
+
+        final Optional<Integer> processors = config.getOptionalValue("NUMBER_OF_PROCESSORS", Integer.class);
+
+        System.out.println("NUMBER_OF_PROCESSORS: " + processors.orElse(null));
     }
 
     private UserManager mockUserManager() {

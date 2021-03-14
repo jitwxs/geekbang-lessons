@@ -1,7 +1,7 @@
 <head>
     <jsp:directive.include
             file="/WEB-INF/jsp/prelude/include-head-meta.jspf" />
-    <title>Login Failure</title>
+    <title>Failure Page</title>
 </head>
 <body>
 <div>

@@ -1,10 +1,10 @@
 package org.geektimes.configuration.microprofile.config;
 
-
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigValue;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.eclipse.microprofile.config.spi.Converter;
+import org.geektimes.web.mvc.ClassUtils;
 
 import java.util.*;
 
@@ -13,28 +13,26 @@ public class JavaConfig implements Config {
     /**
      * 内部可变的集合，不要直接暴露在外面
      */
-    private List<ConfigSource> configSources = new LinkedList<>();
+    private final List<ConfigSource> configSources = new LinkedList<>();
 
-    private static Comparator<ConfigSource> configSourceComparator = new Comparator<ConfigSource>() {
-        @Override
-        public int compare(ConfigSource o1, ConfigSource o2) {
-            return Integer.compare(o2.getOrdinal(), o1.getOrdinal());
-        }
-    };
+    private final Map<Class, Converter> converterMap = new HashMap<>();
 
     public JavaConfig() {
         ClassLoader classLoader = getClass().getClassLoader();
+
         ServiceLoader<ConfigSource> serviceLoader = ServiceLoader.load(ConfigSource.class, classLoader);
         serviceLoader.forEach(configSources::add);
-        // 排序
-        configSources.sort(configSourceComparator);
+        configSources.sort((o1, o2) -> Integer.compare(o2.getOrdinal(), o1.getOrdinal()));
+
+        final ServiceLoader<Converter> converter = ServiceLoader.load(Converter.class, classLoader);
+        converter.forEach(e -> converterMap.put(ClassUtils.getInterfaceT(e, 0), e));
     }
 
     @Override
     public <T> T getValue(String propertyName, Class<T> propertyType) {
-        String propertyValue = getPropertyValue(propertyName);
-        // String 转换成目标类型
-        return null;
+        final Optional<Converter<T>> converter = getConverter(propertyType);
+        // 类型转换
+        return converter.map(tConverter -> tConverter.convert(getPropertyValue(propertyName))).orElse(null);
     }
 
     @Override
@@ -71,7 +69,7 @@ public class JavaConfig implements Config {
 
     @Override
     public <T> Optional<Converter<T>> getConverter(Class<T> forType) {
-        return Optional.empty();
+        return Optional.ofNullable(converterMap.get(forType));
     }
 
     @Override
