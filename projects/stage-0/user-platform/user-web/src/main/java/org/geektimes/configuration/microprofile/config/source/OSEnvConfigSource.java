@@ -19,6 +19,9 @@ public class OSEnvConfigSource implements ConfigSource {
 
     public OSEnvConfigSource() {
         this.properties = new HashMap<>(System.getenv());
+
+        // 优先级测试
+        this.properties.put("application.name", "user-web-read-from-os-env");
     }
 
     @Override
@@ -33,9 +36,12 @@ public class OSEnvConfigSource implements ConfigSource {
 
     @Override
     public String getName() {
-        return "Java System Properties";
+        return "OS Env Properties";
     }
 
+    /**
+     * @return 值越大，优先级越高
+     */
     @Override
     public int getOrdinal() {
         return 0;

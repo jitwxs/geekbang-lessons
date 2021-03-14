@@ -20,6 +20,9 @@ public class JavaSystemPropertiesConfigSource implements ConfigSource {
     public JavaSystemPropertiesConfigSource() {
         Map systemProperties = System.getProperties();
         this.properties = new HashMap<>(systemProperties);
+
+        // 优先级测试
+        this.properties.put("application.name", "user-web-read-from-java-system-properties");
     }
 
     @Override
@@ -37,6 +40,9 @@ public class JavaSystemPropertiesConfigSource implements ConfigSource {
         return "Java System Properties";
     }
 
+    /**
+     * @return 值越大，优先级越高
+     */
     @Override
     public int getOrdinal() {
         return 1;
