@@ -2,6 +2,7 @@ package org.geektimes.web.mvc.listener;
 
 
 import org.geektimes.web.mvc.context.ComponentContext;
+import org.geektimes.web.mvc.id.IdGenerator;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -20,6 +21,8 @@ public class ComponentContextInitializerListener implements ServletContextListen
         this.servletContext = sce.getServletContext();
         ComponentContext context = new ComponentContext();
         context.init(servletContext);
+
+        IdGenerator.init(0, 0);
     }
 
     @Override
