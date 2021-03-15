@@ -1,5 +1,6 @@
 package org.geektimes.configuration.microprofile.config.converter;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.microprofile.config.spi.Converter;
 
 /**
@@ -9,6 +10,6 @@ import org.eclipse.microprofile.config.spi.Converter;
 public class FloatConverter implements Converter<Float> {
     @Override
     public Float convert(String s) throws IllegalArgumentException, NullPointerException {
-        return Float.parseFloat(s);
+        return StringUtils.isBlank(s) ? null : Float.parseFloat(s);
     }
 }

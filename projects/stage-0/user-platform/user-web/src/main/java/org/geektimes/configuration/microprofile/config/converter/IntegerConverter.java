@@ -1,5 +1,6 @@
 package org.geektimes.configuration.microprofile.config.converter;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.microprofile.config.spi.Converter;
 
 /**
@@ -9,6 +10,6 @@ import org.eclipse.microprofile.config.spi.Converter;
 public class IntegerConverter implements Converter<Integer> {
     @Override
     public Integer convert(String s) throws IllegalArgumentException, NullPointerException {
-        return Integer.parseInt(s);
+        return StringUtils.isBlank(s) ? null : Integer.parseInt(s);
     }
 }

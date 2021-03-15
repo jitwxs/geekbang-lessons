@@ -1,5 +1,6 @@
 package org.geektimes.configuration.microprofile.config.converter;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.microprofile.config.spi.Converter;
 
 /**
@@ -9,6 +10,6 @@ import org.eclipse.microprofile.config.spi.Converter;
 public class LongConverter implements Converter<Long> {
     @Override
     public Long convert(String s) throws IllegalArgumentException, NullPointerException {
-        return Long.parseLong(s);
+        return StringUtils.isBlank(s) ? null : Long.parseLong(s);
     }
 }

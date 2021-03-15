@@ -1,5 +1,6 @@
 package org.geektimes.configuration.microprofile.config.converter;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.microprofile.config.spi.Converter;
 
 /**
@@ -9,6 +10,6 @@ import org.eclipse.microprofile.config.spi.Converter;
 public class BooleanConverter implements Converter<Boolean> {
     @Override
     public Boolean convert(String s) throws IllegalArgumentException, NullPointerException {
-        return Boolean.parseBoolean(s);
+        return StringUtils.isBlank(s) ? null : Boolean.parseBoolean(s);
     }
 }
