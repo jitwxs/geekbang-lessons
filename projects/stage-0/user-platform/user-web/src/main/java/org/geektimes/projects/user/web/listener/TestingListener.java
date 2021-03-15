@@ -6,6 +6,7 @@ import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.management.UserManager;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 import org.geektimes.web.mvc.context.ComponentContext;
+import org.geektimes.web.mvc.id.IdGenerator;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -82,7 +83,7 @@ public class TestingListener implements ServletContextListener {
 
     private UserManager mockUserManager() {
         User user = new User();
-        user.setId(System.currentTimeMillis());
+        user.setId(IdGenerator.nextId());
         user.setName("小马哥");
         user.setPassword("******");
         user.setEmail("mercyblitz@gmail.com");

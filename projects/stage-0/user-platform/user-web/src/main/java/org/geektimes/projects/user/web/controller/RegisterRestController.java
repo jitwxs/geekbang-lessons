@@ -4,6 +4,7 @@ import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.service.UserService;
 import org.geektimes.web.mvc.RestResponse;
 import org.geektimes.web.mvc.controller.RestController;
+import org.geektimes.web.mvc.id.IdGenerator;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +31,7 @@ public class RegisterRestController implements RestController {
         final String email = request.getParameter("inputEmail");
 
         User user = new User();
-        user.setId(System.currentTimeMillis());
+        user.setId(IdGenerator.nextId());
         user.setName(username);
         user.setPassword(password);
         user.setEmail(email);
