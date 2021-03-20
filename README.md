@@ -89,14 +89,14 @@ http://127.0.0.1:8080/config/read?key=application.name&class=java.lang.String
 
 ```
 Default Success !
-Message: {executeClass=class java.lang.String, result=user-web-read-from-application.properties, requestKey=application.name, requestClass=java.lang.String}
+Message: {executeClass=class java.lang.String, result=user-web-read-from-system-properties, requestKey=application.name, requestClass=java.lang.String}
 ```
 
-尝试去除 `application.properties` 中的配置，再次访问该 URL，将会返回 `system properties` 中的配置。如下所示：
+尝试去除 `org.geektimes.configuration.microprofile.config.source.impl.SystemPropertiesConfigSource#loadConfigs` 中的优先级测试配置，再次访问该 URL，将会返回 `microprofile-config.properties` 中的配置。如下所示：
 
 ```
 Default Success !
-Message: {executeClass=class java.lang.String, result=user-web-read-from-java-system-properties, requestKey=application.name, requestClass=java.lang.String}
+Message: {executeClass=class java.lang.String, result=user-web-read-from-microprofile-config.properties, requestKey=application.name, requestClass=java.lang.String}
 ```
 
 ### 2021-03-06
