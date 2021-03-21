@@ -1,6 +1,8 @@
-package org.geektimes.projects.user.management;
+package org.geektimes.management;
 
 import org.geektimes.projects.user.domain.User;
+import org.geektimes.projects.user.management.UserManager;
+import org.geektimes.projects.user.management.UserManagerMBean;
 
 import javax.management.MBeanInfo;
 import javax.management.StandardMBean;

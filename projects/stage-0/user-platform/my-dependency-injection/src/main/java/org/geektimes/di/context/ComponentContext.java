@@ -1,7 +1,7 @@
-package org.geektimes.web.mvc.context;
+package org.geektimes.di.context;
 
-import org.geektimes.web.mvc.function.ThrowableAction;
-import org.geektimes.web.mvc.function.ThrowableFunction;
+import org.geektimes.di.function.ThrowableAction;
+import org.geektimes.di.function.ThrowableFunction;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -18,52 +18,64 @@ import java.util.stream.Stream;
  */
 public class ComponentContext {
 
-    public static final String CONTEXT_NAME = ComponentContext.class.getName();
-
     private static final String COMPONENT_ENV_CONTEXT_NAME = "java:comp/env";
 
-    private static final Logger logger = Logger.getLogger(CONTEXT_NAME);
+    public static final String CONTEXT_NAME = ComponentContext.class.getName();
 
-    private static ServletContext servletContext; // 请注意
-    // 假设一个 Tomcat JVM 进程，三个 Web Apps，会不会相互冲突？（不会冲突）
-    // static 字段是 JVM 缓存吗？（是 ClassLoader 缓存）
+    private static ServletContext servletContext = null;
 
-//    private static ApplicationContext applicationContext;
+    private static ClassLoader classLoader;
 
-//    public void setApplicationContext(ApplicationContext applicationContext){
-//        ComponentContext.applicationContext = applicationContext;
-//        WebApplicationContextUtils.getRootWebApplicationContext()
-//    }
 
-    private Context envContext; // Component Env Context
+    private final Logger logger = Logger.getLogger(CONTEXT_NAME);
 
-    private ClassLoader classLoader;
+    private Context envContext;
 
-    private Map<String, Object> componentsMap = new LinkedHashMap<>();
+    private final Map<String, Object> componentsMap = new LinkedHashMap<>();
 
     /**
      * 获取 ComponentContext
-     *
-     * @return
      */
     public static ComponentContext getInstance() {
-        return (ComponentContext) servletContext.getAttribute(CONTEXT_NAME);
-    }
-
-    private static void close(Context context) {
-        if (context != null) {
-            ThrowableAction.execute(context::close);
+        if(servletContext == null) {
+            throw new IllegalStateException("Must Call ComponentContext init() First");
         }
+
+        return (ComponentContext)ComponentContext. servletContext.getAttribute(CONTEXT_NAME);
     }
 
-    public void init(ServletContext servletContext) throws RuntimeException {
+    /**
+     * 初始化 ComponentContext
+     */
+    public static void init(ServletContext servletContext) throws RuntimeException {
         ComponentContext.servletContext = servletContext;
-        servletContext.setAttribute(CONTEXT_NAME, this);
-        // 获取当前 ServletContext（WebApp）ClassLoader
-        this.classLoader = servletContext.getClassLoader();
-        initEnvContext();
-        instantiateComponents();
-        initializeComponents();
+        ComponentContext.classLoader = servletContext.getClassLoader();
+
+        ComponentContext componentContext = new ComponentContext();
+
+        servletContext.setAttribute(CONTEXT_NAME, componentContext);
+
+        componentContext.initEnvContext();
+        componentContext.instantiateComponents();
+        componentContext.initializeComponents();
+    }
+
+    /**
+     * 初始化 envContext
+     */
+    private void initEnvContext() throws RuntimeException {
+        if (this.envContext != null) {
+            return;
+        }
+        Context context = null;
+        try {
+            context = new InitialContext();
+            this.envContext = (Context) context.lookup(COMPONENT_ENV_CONTEXT_NAME);
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        } finally {
+            close(context);
+        }
     }
 
     /**
@@ -90,9 +102,10 @@ public class ComponentContext {
             injectComponents(component);
             // 初始阶段 - {@link PostConstruct}
             processPostConstruct(component);
-            // 销毁阶段 - {@link PreDestroy}
-            processPreDestroy(component);
         });
+
+        // 销毁阶段 - {@link PreDestroy}
+        processPreDestroy(componentsMap.values());
     }
 
     public void injectComponents(Object component) {
@@ -129,22 +142,26 @@ public class ComponentContext {
         });
     }
 
-    private void processPreDestroy(Object component) {
-        final Class<?> componentClass = component.getClass();
+    private void processPreDestroy(Collection<Object> components) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for (Object component : components) {
+                final Class<?> componentClass = component.getClass();
 
-        Stream.of(componentClass.getMethods())
-                .filter(method ->
-                        !Modifier.isStatic(method.getModifiers()) &&      // 非 static
-                                method.getParameterCount() == 0 &&        // 没有参数
-                                method.isAnnotationPresent(PreDestroy.class) // 标注 @PreDestroy
-                ).forEach(method -> {
-            // 执行目标方法
-            try {
-                method.invoke(component);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                Stream.of(componentClass.getMethods())
+                        .filter(method ->
+                                !Modifier.isStatic(method.getModifiers()) &&      // 非 static
+                                        method.getParameterCount() == 0 &&        // 没有参数
+                                        method.isAnnotationPresent(PreDestroy.class) // 标注 @PreDestroy
+                        ).forEach(method -> {
+                    // 执行目标方法
+                    try {
+                        method.invoke(component);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
-        });
+        }));
     }
 
     /**
@@ -155,7 +172,7 @@ public class ComponentContext {
      * @return 返回
      * @see ThrowableFunction#apply(Object)
      */
-    protected <R> R executeInContext(ThrowableFunction<Context, R> function) {
+    private <R> R executeInContext(ThrowableFunction<Context, R> function) {
         return executeInContext(function, false);
     }
 
@@ -168,7 +185,7 @@ public class ComponentContext {
      * @return 返回
      * @see ThrowableFunction#apply(Object)
      */
-    protected <R> R executeInContext(ThrowableFunction<Context, R> function, boolean ignoredException) {
+    private <R> R executeInContext(ThrowableFunction<Context, R> function, boolean ignoredException) {
         return executeInContext(this.envContext, function, ignoredException);
     }
 
@@ -244,18 +261,9 @@ public class ComponentContext {
         close(this.envContext);
     }
 
-    private void initEnvContext() throws RuntimeException {
-        if (this.envContext != null) {
-            return;
-        }
-        Context context = null;
-        try {
-            context = new InitialContext();
-            this.envContext = (Context) context.lookup(COMPONENT_ENV_CONTEXT_NAME);
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
-        } finally {
-            close(context);
+    private static void close(Context context) {
+        if (context != null) {
+            ThrowableAction.execute(context::close);
         }
     }
 }

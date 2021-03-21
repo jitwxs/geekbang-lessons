@@ -1,6 +1,6 @@
 package org.geektimes.projects.user.orm.jpa;
 
-import org.geektimes.web.mvc.context.ComponentContext;
+import org.geektimes.di.context.ComponentContext;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -34,14 +35,18 @@ public class DelegatingEntityManager implements EntityManager {
     }
 
     private Map loadProperties(String propertiesLocation) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL propertiesFileURL = classLoader.getResource(propertiesLocation);
+        URL propertiesFileURL = Thread.currentThread().getContextClassLoader().getResource(propertiesLocation);
+        if(propertiesFileURL == null) {
+            throw new IllegalStateException("loadProperties propertiesFileURL is null");
+        }
+
         Properties properties = new Properties();
-        try {
-            properties.load(propertiesFileURL.openStream());
+        try (InputStream in = propertiesFileURL.openStream()) {
+            properties.load(in);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         // 增加 JNDI 引用处理
         ComponentContext componentContext = ComponentContext.getInstance();
 

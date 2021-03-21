@@ -1,9 +1,9 @@
 package org.geektimes.projects.user.repository;
 
+import org.geektimes.di.context.ComponentContext;
+import org.geektimes.di.function.ThrowableFunction;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.sql.DBConnectionManager;
-import org.geektimes.web.mvc.context.ComponentContext;
-import org.geektimes.web.mvc.function.ThrowableFunction;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;

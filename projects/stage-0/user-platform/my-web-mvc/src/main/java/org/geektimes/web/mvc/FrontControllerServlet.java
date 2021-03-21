@@ -1,7 +1,7 @@
 package org.geektimes.web.mvc;
 
 import org.apache.commons.lang.StringUtils;
-import org.geektimes.web.mvc.context.ComponentContext;
+import org.geektimes.di.context.ComponentContext;
 import org.geektimes.web.mvc.controller.Controller;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
@@ -10,6 +10,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,23 +24,27 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.substringAfter;
 
+@WebServlet(
+        name = "FrontControllerServlet",
+        urlPatterns = {"/", "*.css", "*.js"},
+        loadOnStartup = 2
+)
 public class FrontControllerServlet extends HttpServlet {
 
     /**
      * 请求路径和 Controller 的映射关系缓存
      */
-    private Map<String, Controller> controllersMapping = new HashMap<>();
+    private final Map<String, Controller> controllersMapping = new HashMap<>();
 
     /**
      * 请求路径和 {@link HandlerMethodInfo} 映射关系缓存
      */
-    private Map<String, HandlerMethodInfo> handleMethodInfoMapping = new HashMap<>();
+    private final Map<String, HandlerMethodInfo> handleMethodInfoMapping = new HashMap<>();
 
     /**
      * 初始化 Servlet
-     *
-     * @param servletConfig
      */
+    @Override
     public void init(ServletConfig servletConfig) {
         initHandleMethods();
     }

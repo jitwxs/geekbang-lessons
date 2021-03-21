@@ -1,6 +1,8 @@
 package org.geektimes.projects.user.web.filter;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -8,6 +10,14 @@ import java.io.IOException;
 /**
  * 字符编码 Filter
  */
+@WebFilter(
+        urlPatterns = "/*",
+        dispatcherTypes = {
+                DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR
+        },
+        initParams = {
+                @WebInitParam(name = "encoding", value = "UTF-8")
+        })
 public class CharsetEncodingFilter implements Filter {
 
     private String encoding = null;
@@ -21,9 +31,7 @@ public class CharsetEncodingFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request,
-                         ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -34,7 +42,7 @@ public class CharsetEncodingFilter implements Filter {
         }
 
         // 执行过滤链
-        chain.doFilter(request,response);
+        chain.doFilter(request, response);
     }
 
     @Override

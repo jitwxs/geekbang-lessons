@@ -1,7 +1,8 @@
-package org.geektimes.projects.user.management;
+package org.geektimes.management;
 
 import com.sun.jmx.mbeanserver.Introspector;
 import org.geektimes.projects.user.domain.User;
+import org.geektimes.projects.user.management.UserManager;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;

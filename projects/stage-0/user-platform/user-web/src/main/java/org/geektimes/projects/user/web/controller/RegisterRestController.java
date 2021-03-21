@@ -1,10 +1,10 @@
 package org.geektimes.projects.user.web.controller;
 
+import org.geektimes.configuration.id.IdGenerator;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.service.UserService;
 import org.geektimes.web.mvc.RestResponse;
 import org.geektimes.web.mvc.controller.RestController;
-import org.geektimes.web.mvc.id.IdGenerator;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;

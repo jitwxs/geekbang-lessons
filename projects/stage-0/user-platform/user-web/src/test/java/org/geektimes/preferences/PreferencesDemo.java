@@ -1,4 +1,4 @@
-package org.geektimes.configuration.demo;
+package org.geektimes.preferences;
 
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;

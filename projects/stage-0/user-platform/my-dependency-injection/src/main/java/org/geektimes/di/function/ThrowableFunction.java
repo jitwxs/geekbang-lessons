@@ -1,4 +1,4 @@
-package org.geektimes.web.mvc.function;
+package org.geektimes.di.function;
 
 @FunctionalInterface
 public interface ThrowableFunction<T, R> {
@@ -42,4 +42,3 @@ public interface ThrowableFunction<T, R> {
         return function.execute(t);
     }
 }
-

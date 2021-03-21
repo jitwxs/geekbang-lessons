@@ -1,4 +1,4 @@
-package org.geektimes.projects.user.management;
+package org.geektimes.management;
 
 import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.ManagementFactory;

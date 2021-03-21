@@ -1,4 +1,4 @@
-package org.geektimes.web.mvc.id;
+package org.geektimes.configuration.id;
 
 import java.util.Objects;
 import java.util.logging.Level;
@@ -19,10 +19,10 @@ public class IdGenerator {
             IdGenerator.businessId = businessId;
             IdGenerator.serverId = serverId;
             snowFlakeIdGenerator = new SnowFlakeIdGenerator(businessId, serverId);
-            logger.log(Level.INFO, "IdGenerator init, businessId={},serverId={}", new Object[]{businessId, serverId});
+            logger.log(Level.INFO, "IdGenerator init, businessId=%s,serverId=%s", new Object[]{businessId, serverId});
             return;
         }
-        logger.log(Level.WARNING, " IdGenerator inited, businessId={},serverId={}", new Object[]{businessId, serverId});
+        logger.log(Level.WARNING, " IdGenerator inited, businessId=%s,serverId=%s", new Object[]{businessId, serverId});
     }
 
     public static long getServerId(final Long id) {

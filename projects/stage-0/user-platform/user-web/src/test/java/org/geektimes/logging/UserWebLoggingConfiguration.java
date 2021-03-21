@@ -1,4 +1,4 @@
-package org.geektimes.projects.user.logging;
+package org.geektimes.logging;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package org.geektimes.web.mvc.id;
+package org.geektimes.configuration.id;
 /**
  * Twitter_Snowflake<br>
  * SnowFlake的结构如下(每部分用-分开):<br>
