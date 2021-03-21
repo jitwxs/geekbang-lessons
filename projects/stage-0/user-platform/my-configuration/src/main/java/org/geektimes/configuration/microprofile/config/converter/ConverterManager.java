@@ -5,7 +5,10 @@ import org.eclipse.microprofile.config.spi.Converter;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.ServiceLoader;
 
 /**
  * 管理 Converter

@@ -7,7 +7,9 @@ import org.eclipse.microprofile.config.spi.Converter;
 import org.geektimes.configuration.microprofile.config.converter.ConverterManager;
 import org.geektimes.configuration.microprofile.config.source.ConfigSourceManager;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.StreamSupport;
 
 public class DefaultConfig implements Config {
