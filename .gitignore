@@ -2,6 +2,7 @@
 target/
 *.jar
 !.mvn/wrapper/*
+.mvn/
 *.war
 *.zip
 *.tar
@@ -47,3 +48,5 @@ compiler/.gradle/*
 # Tomcat
 .extract
 .flattened-pom.xml
+
+db/

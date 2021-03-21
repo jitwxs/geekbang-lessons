@@ -13,6 +13,48 @@
 
 ## 03 Homework
 
+### 2021-03-20
+
+#### 作业要求
+
+1. 参考 my dependency-injection 模块
+   - 脱离 web.xml 配置实现 ComponentContext 自动初始化
+   - 使用独立模块并且能够在 user-web 中运行成功
+2. 晚上 my-configuration 模块
+   - Config 对象如何能被 my-web-mvc 使用
+     - 可能在 ServletContext 获取
+     - 如何通过 ThreadLocal 获取
+3. 去提前阅读 Servlet 规范中 Security 章节（Servlet 容器安全）
+
+#### 验证方式
+
+切换分支并打包运行项目
+
+```shell
+git checkout homework/0320
+
+cd projects/stage-0/user-platform
+
+mvn clean install
+
+java -jar xxx.jar
+```
+
+**验证 ComponentContext 迁移至独立模块脱离 web.xml 的初始化**
+
+1. 回归验证 0306 的注册和查询功能
+2. 回归验证 0313 的 Jolokia 和读取 "application.name" 功能
+
+**验证 Config 对象在 my-web-mvc 的使用**
+
+> 没明白题目意思。
+>
+> 因为 `DefaultConfigProviderResolver` 这个类已经放进 SPI 了，那么我直接使用 `ConfigProviderResolver.instance().getConfig()` 就能取到了。
+>
+> 参考代码：org.geektimes.projects.user.web.DefaultServletContextListener#testMicroprofile
+>
+> 为什么要问在 ServletContext 和 ThreadLocal  中如何获取呢，和这个没有关系吧？
+
 ### 2021-03-13
 
 #### 作业要求
