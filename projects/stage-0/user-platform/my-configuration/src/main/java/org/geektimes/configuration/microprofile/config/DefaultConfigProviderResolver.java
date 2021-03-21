@@ -40,14 +40,13 @@ public class DefaultConfigProviderResolver extends ConfigProviderResolver {
     }
 
     private ConfigBuilder newConfigBuilder(ClassLoader classLoader) {
-        return classLoader == null ? new DefaultConfigBuilder() : new DefaultConfigBuilder(classLoader);
+        return (classLoader == null ? new DefaultConfigBuilder() : new DefaultConfigBuilder(classLoader))
+                .addDefaultSources()
+                .addDiscoveredSources()
+                .addDiscoveredConverters();
     }
 
     private Config newConfig(ClassLoader classLoader) {
-        return newConfigBuilder(classLoader)
-                .addDefaultSources()
-                .addDiscoveredSources()
-                .addDiscoveredConverters()
-                .build();
+        return newConfigBuilder(classLoader).build();
     }
 }

@@ -13,26 +13,22 @@ public abstract class AbstractMapConfigSource implements ConfigSource {
     protected final String name;
     protected final int ordinal;
 
-    protected final Map<String, String> configMap;
+    protected Map<String, String> configMap = null;
 
     public AbstractMapConfigSource(final String name, final int ordinal) {
         this.name = name;
         this.ordinal = ordinal;
-        this.configMap = loadConfigs();
     }
-
-    /**
-     * 加载所有配置
-     */
-    protected abstract Map loadConfigs();
 
     @Override
     public Set<String> getPropertyNames() {
+        this.lazyLoadConfig();
         return configMap.keySet();
     }
 
     @Override
     public String getValue(String propertyName) {
+        this.lazyLoadConfig();
         return configMap.get(propertyName);
     }
 
@@ -45,4 +41,17 @@ public abstract class AbstractMapConfigSource implements ConfigSource {
     public int getOrdinal() {
         return this.ordinal;
     }
+
+    private void lazyLoadConfig() {
+        if(configMap == null) {
+            synchronized (AbstractMapConfigSource.class) {
+                configMap = loadConfigs();
+            }
+        }
+    }
+
+    /**
+     * 加载所有配置
+     */
+    protected abstract Map loadConfigs();
 }
