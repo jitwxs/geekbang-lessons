@@ -17,7 +17,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.WebListener;
-import javax.servlet.descriptor.JspConfigDescriptor;
 import javax.servlet.descriptor.JspPropertyGroupDescriptor;
 import java.lang.management.ManagementFactory;
 import java.sql.Connection;
@@ -73,7 +72,7 @@ public class DefaultServletContextListener implements ServletContextListener {
         }
 
         // 7. 测试 Config
-        testMicroprofile(componentContext.getComponent("bean/DefaultConfigProviderResolver"));
+        testMicroprofile();
     }
 
     @Override
@@ -128,7 +127,9 @@ public class DefaultServletContextListener implements ServletContextListener {
         mBeanServer.registerMBean(userManager, objectName);
     }
 
-    private void testMicroprofile(final ConfigProviderResolver resolver) {
+    private void testMicroprofile() {
+        final ConfigProviderResolver resolver = ConfigProviderResolver.instance();
+
         final Config config = resolver.getConfig();
 
         final Optional<Integer> processors = config.getOptionalValue("NUMBER_OF_PROCESSORS", Integer.class);

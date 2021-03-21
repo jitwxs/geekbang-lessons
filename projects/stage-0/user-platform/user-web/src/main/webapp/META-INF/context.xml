@@ -44,9 +44,4 @@
 	<Resource name="bean/UserService" auth="Container"
 			  type="org.geektimes.projects.user.service.UserServiceImpl"
 			  factory="org.apache.naming.factory.BeanFactory" />
-
-	<Resource name="bean/DefaultConfigProviderResolver" auth="Container"
-			  type="org.geektimes.configuration.microprofile.config.DefaultConfigProviderResolver"
-			  factory="org.apache.naming.factory.BeanFactory" />
-
 </Context>

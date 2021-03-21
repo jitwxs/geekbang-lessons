@@ -4,7 +4,6 @@ import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.geektimes.web.mvc.RestResponse;
 import org.geektimes.web.mvc.controller.RestController;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -20,9 +19,6 @@ import java.util.Optional;
  */
 @Path("/config")
 public class ReadPropertiesRestController implements RestController {
-    @Resource(name = "bean/DefaultConfigProviderResolver")
-    private ConfigProviderResolver configResolver;
-
     @GET
     @Path("/read")
     @Override
@@ -37,7 +33,7 @@ public class ReadPropertiesRestController implements RestController {
             // default string.class
         }
 
-        final Optional<?> result = configResolver.getConfig().getOptionalValue(key, valueClazz);
+        final Optional<?> result = ConfigProviderResolver.instance().getConfig().getOptionalValue(key, valueClazz);
 
         Map<String, Object> respMap = new HashMap<>();
 
