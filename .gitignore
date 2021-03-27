@@ -49,4 +49,6 @@ compiler/.gradle/*
 .extract
 .flattened-pom.xml
 
+# Others
 db/
+activemq-data/
