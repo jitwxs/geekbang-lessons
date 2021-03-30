@@ -42,6 +42,6 @@ public class ReadPropertiesRestController implements RestController {
         respMap.put("executeClass", valueClazz);
         respMap.put("result", result.orElse(null));
 
-        return RestResponse.success(respMap.toString(), "default-success.jsp");
+        return RestResponse.success(respMap.toString());
     }
 }

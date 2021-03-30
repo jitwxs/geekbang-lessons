@@ -10,18 +10,20 @@ public class RestResponse {
 
     private String message;
 
-    /**
-     * 转发路径
-     */
-    private String forwardPath;
-
     public RestResponse() {
     }
 
-    public RestResponse(int code, String message, String forwardPath) {
+    public RestResponse(int code, String message) {
         this.code = code;
         this.message = message;
-        this.forwardPath = forwardPath;
+    }
+
+    @Override
+    public String toString() {
+        return "RestResponse{" +
+                "code=" + code +
+                ", message='" + message + '\'' +
+                '}';
     }
 
     public int getCode() {
@@ -40,19 +42,11 @@ public class RestResponse {
         this.message = message;
     }
 
-    public String getForwardPath() {
-        return forwardPath;
-    }
-
-    public void setForwardPath(String forwardPath) {
-        this.forwardPath = forwardPath;
-    }
-
-    public static RestResponse success(String message, String forwardPath) {
-        return new RestResponse(0, message, forwardPath);
+    public static RestResponse success(String message) {
+        return new RestResponse(0, message);
     }
 
     public static RestResponse failure(final int code, final String message) {
-        return new RestResponse(code, message, null);
+        return new RestResponse(code, message);
     }
 }

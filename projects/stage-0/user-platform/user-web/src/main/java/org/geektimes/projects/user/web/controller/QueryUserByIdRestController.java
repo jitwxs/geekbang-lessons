@@ -21,7 +21,7 @@ public class QueryUserByIdRestController implements RestController {
     private UserService userService;
 
     @POST
-    @Path("/user")
+    @Path("/testGet")
     @Override
     public RestResponse execute(HttpServletRequest request, HttpServletResponse response) throws Throwable {
         final String id = request.getParameter("id");
@@ -32,7 +32,7 @@ public class QueryUserByIdRestController implements RestController {
             if(user == null) {
                 return RestResponse.failure(-1, "User Not Exist");
             } else {
-                return RestResponse.success(user.toString(), "home.jsp");
+                return RestResponse.success(user.toString());
             }
         } catch (Exception e) {
             return RestResponse.failure(-1, e.getMessage());

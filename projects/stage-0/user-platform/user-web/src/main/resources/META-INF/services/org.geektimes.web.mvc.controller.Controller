@@ -1,4 +1,5 @@
-org.geektimes.projects.user.web.controller.HelloWorldController
+org.geektimes.projects.user.web.controller.TestGetController
+org.geektimes.projects.user.web.controller.TestPostController
 org.geektimes.projects.user.web.controller.RegisterPageController
 org.geektimes.projects.user.web.controller.RegisterRestController
 org.geektimes.projects.user.web.controller.QueryUserByIdRestController

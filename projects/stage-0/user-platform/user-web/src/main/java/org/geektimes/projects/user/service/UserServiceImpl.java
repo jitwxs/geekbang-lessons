@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
         // persist
         if(databaseUserRepository.save(user)) {
-            return RestResponse.success("您的用户ID是：" + user.getId(), "home.jsp");
+            return RestResponse.success("您的用户ID是：" + user.getId());
         } else {
             return RestResponse.failure(-1, "save failed");
         }

@@ -140,7 +140,7 @@ public class FrontControllerServlet extends HttpServlet {
                     }
 
                     if (controller instanceof PageController) {
-                        PageController pageController = PageController.class.cast(controller);
+                        PageController pageController = (PageController) controller;
                         String viewPath = pageController.execute(request, response);
                         // 页面请求 forward
                         // request -> RequestDispatcher forward
@@ -149,26 +149,13 @@ public class FrontControllerServlet extends HttpServlet {
                         // ServletContext -> RequestDispatcher 必须以 "/" 开头
                         getRequestDispatcher(request, viewPath).forward(request, response);
                     } else if (controller instanceof RestController) {
-                        final RestController restController = RestController.class.cast(controller);
+                        final RestController restController = (RestController) controller;
 
                         final RestResponse restResponse = restController.execute(request, response);
 
-                        request.setAttribute("restCode", restResponse.getCode());
-                        request.setAttribute("restMessage", restResponse.getMessage());
-
-                        if(restResponse.getCode() != 0) {
-                            // failure
-                            getRequestDispatcher(request, "default-failure.jsp").forward(request, response);
-                        } else {
-                            // success
-                            if(StringUtils.isNotBlank(restResponse.getForwardPath())) {
-                                // forward
-                                getRequestDispatcher(request, restResponse.getForwardPath()).forward(request, response);
-                            } else {
-                                // default
-                                getRequestDispatcher(request, "default-success.jsp").forward(request, response);
-                            }
-                        }
+                        response.setCharacterEncoding("UTF-8");
+                        response.setContentType("text/json; charset=utf-8”");
+                        response.getWriter().write(restResponse.toString());
                     }
                 }
             } catch (Throwable throwable) {
