@@ -1,6 +1,6 @@
 package org.geektimes.web.mvc.controller;
 
-import org.geektimes.web.mvc.RestResponse;
+import org.geektimes.rest.bean.RestResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

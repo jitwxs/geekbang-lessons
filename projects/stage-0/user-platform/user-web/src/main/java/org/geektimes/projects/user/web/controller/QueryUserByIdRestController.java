@@ -2,7 +2,7 @@ package org.geektimes.projects.user.web.controller;
 
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.service.UserService;
-import org.geektimes.web.mvc.RestResponse;
+import org.geektimes.rest.bean.RestResponse;
 import org.geektimes.web.mvc.controller.RestController;
 
 import javax.annotation.Resource;
@@ -21,7 +21,7 @@ public class QueryUserByIdRestController implements RestController {
     private UserService userService;
 
     @POST
-    @Path("/testGet")
+    @Path("/user")
     @Override
     public RestResponse execute(HttpServletRequest request, HttpServletResponse response) throws Throwable {
         final String id = request.getParameter("id");

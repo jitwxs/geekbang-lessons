@@ -1,7 +1,7 @@
 package org.geektimes.projects.user.web.controller;
 
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
-import org.geektimes.web.mvc.RestResponse;
+import org.geektimes.rest.bean.RestResponse;
 import org.geektimes.web.mvc.controller.RestController;
 
 import javax.servlet.http.HttpServletRequest;

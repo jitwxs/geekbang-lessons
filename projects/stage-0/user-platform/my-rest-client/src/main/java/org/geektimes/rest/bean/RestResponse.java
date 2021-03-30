@@ -1,4 +1,4 @@
-package org.geektimes.web.mvc;
+package org.geektimes.rest.bean;
 
 /**
  * Rest 请求响应

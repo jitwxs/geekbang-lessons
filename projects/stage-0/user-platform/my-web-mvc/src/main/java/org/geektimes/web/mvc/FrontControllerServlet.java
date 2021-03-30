@@ -1,7 +1,9 @@
 package org.geektimes.web.mvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.geektimes.di.context.ComponentContext;
+import org.geektimes.rest.bean.RestResponse;
 import org.geektimes.web.mvc.controller.Controller;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
@@ -155,7 +157,7 @@ public class FrontControllerServlet extends HttpServlet {
 
                         response.setCharacterEncoding("UTF-8");
                         response.setContentType("text/json; charset=utf-8”");
-                        response.getWriter().write(restResponse.toString());
+                        response.getWriter().write(new ObjectMapper().writeValueAsString(restResponse));
                     }
                 }
             } catch (Throwable throwable) {

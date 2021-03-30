@@ -1,7 +1,7 @@
 package org.geektimes.projects.user.service;
 
 import org.geektimes.projects.user.domain.User;
-import org.geektimes.web.mvc.RestResponse;
+import org.geektimes.rest.bean.RestResponse;
 
 /**
  * 用户服务

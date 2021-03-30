@@ -2,7 +2,7 @@ package org.geektimes.projects.user.service;
 
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.repository.DatabaseUserRepository;
-import org.geektimes.web.mvc.RestResponse;
+import org.geektimes.rest.bean.RestResponse;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
