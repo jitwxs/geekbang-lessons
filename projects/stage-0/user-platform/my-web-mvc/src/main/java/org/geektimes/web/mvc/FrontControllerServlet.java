@@ -26,7 +26,7 @@ import static org.apache.commons.lang.StringUtils.substringAfter;
 
 @WebServlet(
         name = "FrontControllerServlet",
-        urlPatterns = {"/", "*.css", "*.js"},
+        urlPatterns = {"/"},
         loadOnStartup = 2
 )
 public class FrontControllerServlet extends HttpServlet {
