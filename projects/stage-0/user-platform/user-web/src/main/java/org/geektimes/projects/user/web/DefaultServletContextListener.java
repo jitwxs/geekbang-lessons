@@ -7,7 +7,6 @@ import org.geektimes.di.context.ComponentContext;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.management.UserManager;
 import org.geektimes.projects.user.sql.DBConnectionManager;
-import org.geektimes.web.mvc.JspPropertyGroupDescriptorImpl;
 import org.jolokia.http.AgentServlet;
 
 import javax.management.MBeanServer;
@@ -17,12 +16,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
 import javax.servlet.annotation.WebListener;
-import javax.servlet.descriptor.JspPropertyGroupDescriptor;
 import java.lang.management.ManagementFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -48,8 +45,6 @@ public class DefaultServletContextListener implements ServletContextListener {
 
         // 3. ID 生成器初始化
         IdGenerator.init(0, 0);
-
-//        initJspConfig(servletContext);
 
         // 4. JNDI 打印
         logger.info("所有的 JNDI 组件名称：[");
@@ -90,17 +85,6 @@ public class DefaultServletContextListener implements ServletContextListener {
         final ServletRegistration.Dynamic jolokiaAgentServlet = servletContext.addServlet("jolokia-agent", AgentServlet.class);
         jolokiaAgentServlet.setLoadOnStartup(1);
         jolokiaAgentServlet.addMapping("/jolokia/*");
-    }
-
-    /**
-     * 初始化 JSP 配置
-     */
-    private void initJspConfig(ServletContext servletContext) {
-        final Collection<JspPropertyGroupDescriptor> jspPropertyGroups = servletContext.getJspConfigDescriptor().getJspPropertyGroups();
-        jspPropertyGroups.add(new JspPropertyGroupDescriptorImpl("*.jsp", "UTF-8",
-                "/WEB-INF/jsp/prelude/header.jspf", "/WEB-INF/jsp/coda/footer.jspf", true));
-        jspPropertyGroups.add(new JspPropertyGroupDescriptorImpl("*.jspf", "UTF-8",
-                "/WEB-INF/jsp/prelude/include-taglibs.jspf", "/WEB-INF/jsp/prelude/variables.jspf", true));
     }
 
     private void initTable(Statement statement) {
