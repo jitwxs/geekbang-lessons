@@ -1,5 +1,8 @@
 package org.geektimes.rest.client;
 
+import org.geektimes.rest.client.invocation.HttpGetInvocation;
+import org.geektimes.rest.client.invocation.HttpPostInvocation;
+
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.client.Entity;
@@ -242,7 +245,7 @@ public class DefaultInvocationBuilder implements Invocation.Builder {
 
     @Override
     public Invocation buildGet() {
-        return new HttpGetInvocation(uriBuilder.build(), headers);
+        return new HttpGetInvocation(uriBuilder.build(), headers, encodings);
     }
 
     @Override
@@ -252,7 +255,7 @@ public class DefaultInvocationBuilder implements Invocation.Builder {
 
     @Override
     public Invocation buildPost(Entity<?> entity) {
-        return null;
+        return new HttpPostInvocation(uriBuilder.build(), headers, encodings, entity);
     }
 
     @Override

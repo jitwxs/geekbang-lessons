@@ -7,13 +7,18 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 public class RestClientDemo {
 
     /**
-     * org.geektimes.projects.user.web.controller.TestGetController
+     * Request org.geektimes.projects.user.web.controller.TestGetController
      */
     @Test
     public void testGet() throws IOException {
@@ -27,5 +32,27 @@ public class RestClientDemo {
         final RestResponse restResponse = objectMapper.readValue(response.readEntity(String.class), RestResponse.class);
 
         Assert.assertEquals("Hello Get!", restResponse.getMessage());
+    }
+
+    /**
+     * Request org.geektimes.projects.user.web.controller.TestPostController
+     */
+    @Test
+    public void testPost() throws IOException {
+        RestResponse request = new RestResponse();
+        request.setCode(123);
+        request.setMessage("Hello Server");
+
+        final Entity<RestResponse> entity = Entity.entity(request, new Variant(MediaType.APPLICATION_JSON_TYPE, Locale.CHINA, StandardCharsets.UTF_8.toString()));
+
+        Client client = ClientBuilder.newClient();
+
+        final RestResponse response = client
+                .target("http://127.0.0.1:8080/api/testPost")
+                .request()
+                .acceptEncoding(StandardCharsets.UTF_8.toString())
+                .post(entity, RestResponse.class);
+
+        Assert.assertEquals("Hello Client, Receive Request Body: " + new ObjectMapper().writeValueAsString(entity), response.getMessage());
     }
 }

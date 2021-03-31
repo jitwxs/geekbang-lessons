@@ -31,7 +31,23 @@ public class DefaultRuntimeDelegate extends RuntimeDelegate {
 
     @Override
     public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type) throws IllegalArgumentException {
-        return null;
+        if(type.isAssignableFrom(MediaType.class)) {
+            return new HeaderDelegate<T>() {
+                @Override
+                public T fromString(String s) {
+                    final String[] split = s.split("/");
+                    return (T) new MediaType(split[0], split[1]);
+                }
+
+                @Override
+                public String toString(T t) {
+                    final MediaType mediaType = (MediaType) t;
+                    return mediaType.getType() + "/" + mediaType.getSubtype();
+                }
+            };
+        } else {
+            return null;
+        }
     }
 
     @Override

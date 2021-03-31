@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class HttpURLConnectionDemo {
 
@@ -15,7 +16,7 @@ public class HttpURLConnectionDemo {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         try (InputStream inputStream = connection.getInputStream()) {
-            System.out.println(IOUtils.toString(inputStream, "UTF-8"));
+            System.out.println(IOUtils.toString(inputStream, StandardCharsets.UTF_8));
         }
         // 关闭连接
         connection.disconnect();
