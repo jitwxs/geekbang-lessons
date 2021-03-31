@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
@@ -38,8 +39,11 @@ import java.util.concurrent.Future;
  */
 public class HttpGetInvocation extends HttpBaseInvocation {
 
-    public HttpGetInvocation(final URI uri, final MultivaluedMap<String, Object> headers, final Set<String> encoding) {
-        super(uri, headers, encoding);
+    public HttpGetInvocation(final URI uri,
+                             final MultivaluedMap<String, Object> headers,
+                             final Map<String, String> properties,
+                             final Set<String> encoding) {
+        super(uri, headers, properties, encoding);
     }
 
     @Override
@@ -53,7 +57,9 @@ public class HttpGetInvocation extends HttpBaseInvocation {
         try {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(HttpMethod.GET);
-            fillAttribute(connection);
+
+            super.fillAttribute(connection);
+
             // TODO Set the cookies
             int statusCode = connection.getResponseCode();
 //            Response.ResponseBuilder responseBuilder = Response.status(statusCode);

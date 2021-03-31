@@ -19,10 +19,23 @@ import java.util.Set;
 public abstract class HttpBaseInvocation implements Invocation {
     protected final URL url;
     protected final MultivaluedMap<String, Object> headers;
+    protected final Map<String, String> properties;
     protected final Set<String> encoding;
 
-    public HttpBaseInvocation(final URI uri, final MultivaluedMap<String, Object> headers, final Set<String> encoding) {
+    /**
+     * 构造方法
+     *
+     * @param uri 请求路径
+     * @param headers 请求头
+     * @param properties 请求 params
+     * @param encoding 请求编码
+     */
+    public HttpBaseInvocation(final URI uri,
+                              final MultivaluedMap<String, Object> headers,
+                              final Map<String, String> properties,
+                              final Set<String> encoding) {
         this.headers = headers;
+        this.properties = properties;
         this.encoding = encoding;
 
         try {
@@ -33,6 +46,7 @@ public abstract class HttpBaseInvocation implements Invocation {
     }
 
     protected void fillAttribute(HttpURLConnection connection) {
+        // 设置 header
         for (Map.Entry<String, List<Object>> entry : headers.entrySet()) {
             String headerName = entry.getKey();
             for (Object headerValue : entry.getValue()) {
@@ -40,6 +54,8 @@ public abstract class HttpBaseInvocation implements Invocation {
             }
         }
 
+        // 设置 properties
+        properties.forEach(connection::setRequestProperty);
         connection.setRequestProperty("content-encoding", StringUtils.join(encoding, ","));
     }
 }

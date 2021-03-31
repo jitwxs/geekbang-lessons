@@ -1,5 +1,7 @@
 package org.geektimes.rest.client;
 
+import org.geektimes.rest.client.invocation.DefaultInvocationBuilder;
+
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;

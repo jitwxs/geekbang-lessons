@@ -4,7 +4,6 @@ import org.geektimes.rest.core.DefaultResponse;
 import org.geektimes.rest.util.IOUtils;
 
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.core.GenericType;
@@ -13,6 +12,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
@@ -21,11 +21,18 @@ import java.util.concurrent.Future;
  * @date 2021-03-30 23:23
  */
 public class HttpPostInvocation extends HttpBaseInvocation {
-    private final Entity<?> entity;
+    /**
+     * q请求体
+     */
+    private final Object requestBody;
 
-    public HttpPostInvocation(final URI uri, final MultivaluedMap<String, Object> headers, final Set<String> encoding, final Entity<?> entity) {
-        super(uri, headers, encoding);
-        this.entity = entity;
+    public HttpPostInvocation(final URI uri,
+                              final MultivaluedMap<String, Object> headers,
+                              final Map<String, String> properties,
+                              final Set<String> encoding,
+                              final Object requestBody) {
+        super(uri, headers, properties, encoding);
+        this.requestBody = requestBody;
     }
 
     @Override
@@ -77,12 +84,16 @@ public class HttpPostInvocation extends HttpBaseInvocation {
         try {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(HttpMethod.POST);
-            fillAttribute(connection);
+
+            super.fillAttribute(connection);
 
             // send body
-            if(entity != null) {
+            if(requestBody != null) {
+                // 任选一个编码发送
+                final String oneEncoding = encoding.iterator().next();
+
                 connection.setDoOutput(true);
-                IOUtils.writeJson(connection.getOutputStream(), entity, encoding.iterator().next());
+                IOUtils.writeJson(connection.getOutputStream(), requestBody, oneEncoding);
             }
 
             int statusCode = connection.getResponseCode();

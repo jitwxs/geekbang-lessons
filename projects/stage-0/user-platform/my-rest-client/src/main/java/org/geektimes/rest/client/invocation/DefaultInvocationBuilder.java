@@ -1,7 +1,8 @@
-package org.geektimes.rest.client;
+package org.geektimes.rest.client.invocation;
 
-import org.geektimes.rest.client.invocation.HttpGetInvocation;
-import org.geektimes.rest.client.invocation.HttpPostInvocation;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringUtils;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.AsyncInvoker;
@@ -27,7 +28,7 @@ public class DefaultInvocationBuilder implements Invocation.Builder {
 
     private MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
 
-    private Map<String, Object> properties = new HashMap<>();
+    private Map<String, String> properties = new HashMap<>();
 
     public DefaultInvocationBuilder(UriBuilder uriBuilder) {
         this.uriBuilder = uriBuilder;
@@ -91,9 +92,24 @@ public class DefaultInvocationBuilder implements Invocation.Builder {
         return this;
     }
 
+    /**
+     * 添加请求参数
+     *
+     * @param name 参数名
+     * @param value 参数值，仅支持 string 类型存储，非 string 类型将被序列化
+     */
     @Override
     public Invocation.Builder property(String name, Object value) {
-        properties.put(name, value);
+        if(value instanceof String) {
+            properties.put(name, (String) value);
+        } else {
+            try {
+                properties.put(name, new ObjectMapper().writeValueAsString(value));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         return this;
     }
 
@@ -245,7 +261,7 @@ public class DefaultInvocationBuilder implements Invocation.Builder {
 
     @Override
     public Invocation buildGet() {
-        return new HttpGetInvocation(uriBuilder.build(), headers, encodings);
+        return new HttpGetInvocation(uriBuilder.build(), headers, properties, encodings);
     }
 
     @Override
@@ -255,7 +271,13 @@ public class DefaultInvocationBuilder implements Invocation.Builder {
 
     @Override
     public Invocation buildPost(Entity<?> entity) {
-        return new HttpPostInvocation(uriBuilder.build(), headers, encodings, entity);
+        // 保存 variant 中的信息
+        addVariant(entity.getVariant());
+
+        // 获取传输的数据
+        final Object data = entity.getEntity();
+
+        return new HttpPostInvocation(uriBuilder.build(), headers, properties, encodings, data);
     }
 
     @Override
@@ -268,4 +290,24 @@ public class DefaultInvocationBuilder implements Invocation.Builder {
         return null;
     }
 
+    /**
+     * 提取 {@link Variant} 参数
+     */
+    private void addVariant(final Variant variant) {
+        if(StringUtils.isNotBlank(variant.getEncoding())) {
+            acceptEncoding(variant.getEncoding());
+        }
+
+        if(variant.getLanguage() != null) {
+            acceptLanguage(variant.getLanguage());
+        }
+
+        if(StringUtils.isNotBlank(variant.getLanguageString())) {
+            acceptLanguage(variant.getLanguageString());
+        }
+
+        if(variant.getMediaType() != null) {
+            accept(variant.getMediaType());
+        }
+    }
 }

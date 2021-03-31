@@ -16,7 +16,7 @@ public class TestPostController implements RestController {
     @Path("/testPost")
     @Override
     public RestResponse execute(HttpServletRequest request, HttpServletResponse response) throws Throwable {
-        return RestResponse.success("Hello Client, Receive Request Body: " +
-                IOUtils.toString(request.getInputStream(), request.getCharacterEncoding()));
+        final String requestBody = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
+        return RestResponse.success(requestBody);
     }
 }

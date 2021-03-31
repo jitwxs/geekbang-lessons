@@ -43,16 +43,17 @@ public class RestClientDemo {
         request.setCode(123);
         request.setMessage("Hello Server");
 
-        final Entity<RestResponse> entity = Entity.entity(request, new Variant(MediaType.APPLICATION_JSON_TYPE, Locale.CHINA, StandardCharsets.UTF_8.toString()));
+        final Variant variant = new Variant(MediaType.APPLICATION_JSON_TYPE, Locale.CHINA, StandardCharsets.UTF_8.toString());
+
+        final Entity<RestResponse> entity = Entity.entity(request, variant);
 
         Client client = ClientBuilder.newClient();
 
         final RestResponse response = client
                 .target("http://127.0.0.1:8080/api/testPost")
                 .request()
-                .acceptEncoding(StandardCharsets.UTF_8.toString())
                 .post(entity, RestResponse.class);
 
-        Assert.assertEquals("Hello Client, Receive Request Body: " + new ObjectMapper().writeValueAsString(entity), response.getMessage());
+        Assert.assertEquals( new ObjectMapper().writeValueAsString(request), response.getMessage());
     }
 }
