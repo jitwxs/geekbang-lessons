@@ -261,7 +261,7 @@ public class DefaultInvocationBuilder implements Invocation.Builder {
 
     @Override
     public Invocation buildGet() {
-        return new HttpGetInvocation(uriBuilder.build(), headers, properties, encodings);
+        return new HttpGetInvocation(uriBuilder.build(), headers, properties, encodings, mediaTypes);
     }
 
     @Override
@@ -277,7 +277,7 @@ public class DefaultInvocationBuilder implements Invocation.Builder {
         // 获取传输的数据
         final Object data = entity.getEntity();
 
-        return new HttpPostInvocation(uriBuilder.build(), headers, properties, encodings, data);
+        return new HttpPostInvocation(uriBuilder.build(), headers, properties, encodings, mediaTypes, data);
     }
 
     @Override

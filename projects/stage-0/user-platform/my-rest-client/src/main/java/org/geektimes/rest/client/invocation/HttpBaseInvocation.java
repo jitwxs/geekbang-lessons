@@ -3,6 +3,7 @@ package org.geektimes.rest.client.invocation;
 import org.apache.commons.lang.StringUtils;
 
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -11,6 +12,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author jitwxs
@@ -21,6 +23,7 @@ public abstract class HttpBaseInvocation implements Invocation {
     protected final MultivaluedMap<String, Object> headers;
     protected final Map<String, String> properties;
     protected final Set<String> encoding;
+    protected final Set<MediaType> mediaTypes;
 
     /**
      * 构造方法
@@ -33,10 +36,12 @@ public abstract class HttpBaseInvocation implements Invocation {
     public HttpBaseInvocation(final URI uri,
                               final MultivaluedMap<String, Object> headers,
                               final Map<String, String> properties,
-                              final Set<String> encoding) {
+                              final Set<String> encoding,
+                              final Set<MediaType> mediaTypes) {
         this.headers = headers;
         this.properties = properties;
         this.encoding = encoding;
+        this.mediaTypes = mediaTypes;
 
         try {
             this.url = uri.toURL();
@@ -56,6 +61,7 @@ public abstract class HttpBaseInvocation implements Invocation {
 
         // 设置 properties
         properties.forEach(connection::setRequestProperty);
+        connection.setRequestProperty("content-type", StringUtils.join(mediaTypes.stream().map(MediaType::toString).collect(Collectors.toList()), ","));
         connection.setRequestProperty("content-encoding", StringUtils.join(encoding, ","));
     }
 }

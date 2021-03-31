@@ -7,6 +7,7 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -30,8 +31,9 @@ public class HttpPostInvocation extends HttpBaseInvocation {
                               final MultivaluedMap<String, Object> headers,
                               final Map<String, String> properties,
                               final Set<String> encoding,
+                              final Set<MediaType> mediaTypes,
                               final Object requestBody) {
-        super(uri, headers, properties, encoding);
+        super(uri, headers, properties, encoding, mediaTypes);
         this.requestBody = requestBody;
     }
 
