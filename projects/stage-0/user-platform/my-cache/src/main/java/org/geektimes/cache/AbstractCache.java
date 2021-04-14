@@ -23,6 +23,7 @@ import org.geektimes.cache.management.CacheStatistics;
 import org.geektimes.cache.management.DummyCacheStatistics;
 import org.geektimes.cache.management.SimpleCacheStatistics;
 import org.geektimes.cache.processor.MutableEntryAdapter;
+import org.geektimes.cache.serialize.ICacheSerialize;
 
 import javax.cache.Cache;
 import javax.cache.CacheException;
@@ -60,9 +61,13 @@ import static org.geektimes.cache.management.ManagementUtils.registerCacheMXBean
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 1.0
  */
-public abstract class AbstractCache<K, V> implements Cache<K, V> {
+public abstract class AbstractCache<K, V, T> implements Cache<K, V> {
 
     protected final Logger logger = Logger.getLogger(getClass().getName());
+
+    protected ICacheSerialize<K, T> keySerialize;
+
+    protected ICacheSerialize<V, T> valueSerialize;
 
     private final CacheManager cacheManager;
 
@@ -86,7 +91,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
     private volatile boolean closed = false;
 
-    protected AbstractCache(CacheManager cacheManager, String cacheName, Configuration<K, V> configuration) {
+    protected AbstractCache(CacheManager cacheManager, String cacheName, Configuration<K, V> configuration, Class<? extends ICacheSerialize> cacheSerializeClass) {
         this.cacheManager = cacheManager;
         this.cacheName = cacheName;
         this.configuration = mutableConfiguration(configuration);
@@ -99,6 +104,15 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
         this.executor = ForkJoinPool.commonPool();
         registerCacheEntryListenersFromConfiguration();
         registerCacheMXBeanIfRequired(this);
+
+        if (cacheSerializeClass != null) {
+            try {
+                this.keySerialize = cacheSerializeClass.newInstance();
+                this.valueSerialize = cacheSerializeClass.newInstance();
+            } catch (Exception e) {
+                throw new CacheException("create cache serialize error", e);
+            }
+        }
     }
 
     /**

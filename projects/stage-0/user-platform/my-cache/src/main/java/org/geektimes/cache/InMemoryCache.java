@@ -31,12 +31,12 @@ import java.util.Set;
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @since 1.0
  */
-public class InMemoryCache<K, V> extends AbstractCache<K, V> {
+public class InMemoryCache<K, V> extends AbstractCache<K, V, Object> {
 
     private final Map<K, ExpirableEntry<K, V>> cache;
 
     public InMemoryCache(CacheManager cacheManager, String cacheName, Configuration<K, V> configuration) {
-        super(cacheManager, cacheName, configuration);
+        super(cacheManager, cacheName, configuration, null);
         this.cache = new HashMap<>();
     }
 
