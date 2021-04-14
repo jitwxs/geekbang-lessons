@@ -23,7 +23,7 @@ import org.geektimes.cache.management.CacheStatistics;
 import org.geektimes.cache.management.DummyCacheStatistics;
 import org.geektimes.cache.management.SimpleCacheStatistics;
 import org.geektimes.cache.processor.MutableEntryAdapter;
-import org.geektimes.cache.serialize.ICacheSerialize;
+import org.geektimes.cache.serialize.AbstractCacheSerialize;
 
 import javax.cache.Cache;
 import javax.cache.CacheException;
@@ -41,6 +41,7 @@ import javax.cache.processor.EntryProcessor;
 import javax.cache.processor.EntryProcessorException;
 import javax.cache.processor.EntryProcessorResult;
 import javax.cache.processor.MutableEntry;
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -65,9 +66,9 @@ public abstract class AbstractCache<K, V, T> implements Cache<K, V> {
 
     protected final Logger logger = Logger.getLogger(getClass().getName());
 
-    protected ICacheSerialize<K, T> keySerialize;
+    protected AbstractCacheSerialize<K, T> keySerialize;
 
-    protected ICacheSerialize<V, T> valueSerialize;
+    protected AbstractCacheSerialize<V, T> valueSerialize;
 
     private final CacheManager cacheManager;
 
@@ -91,7 +92,7 @@ public abstract class AbstractCache<K, V, T> implements Cache<K, V> {
 
     private volatile boolean closed = false;
 
-    protected AbstractCache(CacheManager cacheManager, String cacheName, Configuration<K, V> configuration, Class<? extends ICacheSerialize> cacheSerializeClass) {
+    protected AbstractCache(CacheManager cacheManager, String cacheName, Configuration<K, V> configuration, Class<? extends AbstractCacheSerialize> cacheSerializeClass) {
         this.cacheManager = cacheManager;
         this.cacheName = cacheName;
         this.configuration = mutableConfiguration(configuration);
@@ -107,8 +108,10 @@ public abstract class AbstractCache<K, V, T> implements Cache<K, V> {
 
         if (cacheSerializeClass != null) {
             try {
-                this.keySerialize = cacheSerializeClass.newInstance();
-                this.valueSerialize = cacheSerializeClass.newInstance();
+                final Constructor<? extends AbstractCacheSerialize> constructor = cacheSerializeClass.getConstructor(Class.class);
+
+                this.keySerialize = constructor.newInstance(configuration.getKeyType());
+                this.valueSerialize = constructor.newInstance(configuration.getValueType());
             } catch (Exception e) {
                 throw new CacheException("create cache serialize error", e);
             }

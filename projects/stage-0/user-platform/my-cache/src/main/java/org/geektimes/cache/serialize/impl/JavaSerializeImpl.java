@@ -1,6 +1,6 @@
 package org.geektimes.cache.serialize.impl;
 
-import org.geektimes.cache.serialize.ICacheSerialize;
+import org.geektimes.cache.serialize.AbstractCacheSerialize;
 
 import javax.cache.CacheException;
 import java.io.*;
@@ -10,9 +10,17 @@ import java.io.*;
  * @author jitwxs
  * @date 2021年04月14日 22:38
  */
-public class JavaSerializeImpl<T> implements ICacheSerialize<T, byte[]> {
+public class JavaSerializeImpl<S> extends AbstractCacheSerialize<S, byte[]> {
+    public JavaSerializeImpl(Class<S> sourceClass) {
+        super(sourceClass);
+    }
+
     @Override
-    public byte[] serialize(T source) {
+    public byte[] serialize(S source) {
+        if(source == null) {
+            return null;
+        }
+
         byte[] bytes;
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream)) {
@@ -25,16 +33,16 @@ public class JavaSerializeImpl<T> implements ICacheSerialize<T, byte[]> {
     }
 
     @Override
-    public T deSerialize(byte[] target) {
+    public S deSerialize(byte[] target) {
         if (target == null) {
             return null;
         }
-        T value;
+        S value;
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(target);
              ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)
         ) {
             // byte[] -> Value
-            value = (T) objectInputStream.readObject();
+            value = (S) objectInputStream.readObject();
         } catch (Exception e) {
             throw new CacheException(e);
         }
