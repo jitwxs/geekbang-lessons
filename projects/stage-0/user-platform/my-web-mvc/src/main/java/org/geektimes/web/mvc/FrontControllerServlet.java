@@ -155,10 +155,12 @@ public class FrontControllerServlet extends HttpServlet {
 
                         final RestResponse restResponse = restController.execute(request, response);
 
-                        response.setCharacterEncoding("UTF-8");
-                        response.setContentType("text/json; charset=utf-8”");
-                        response.setHeader("content-encoding", "utf-8");
-                        response.getWriter().write(new ObjectMapper().writeValueAsString(restResponse));
+                        if(response != null) {
+                            response.setCharacterEncoding("UTF-8");
+                            response.setContentType("text/json; charset=utf-8”");
+                            response.setHeader("content-encoding", "utf-8");
+                            response.getWriter().write(new ObjectMapper().writeValueAsString(restResponse));
+                        }
                     }
                 }
             } catch (Throwable throwable) {

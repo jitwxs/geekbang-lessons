@@ -20,6 +20,8 @@
 </head>
 <body>
 	<div class="container">
+		<a href="/githubLogin">GitHub 快捷登录</a>
+
 		<form class="form-signin" method="post" action="/api/register">
 			<h1 class="h3 mb-3 font-weight-normal">注册</h1>
 			<label for="inputUsername" class="sr-only">Username</label>

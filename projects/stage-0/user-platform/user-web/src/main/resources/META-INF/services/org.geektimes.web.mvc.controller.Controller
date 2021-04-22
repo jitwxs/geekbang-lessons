@@ -4,3 +4,5 @@ org.geektimes.projects.user.web.controller.RegisterPageController
 org.geektimes.projects.user.web.controller.RegisterRestController
 org.geektimes.projects.user.web.controller.QueryUserByIdRestController
 org.geektimes.projects.user.web.controller.ReadPropertiesRestController
+org.geektimes.projects.user.web.controller.GithubLoginRestController
+org.geektimes.projects.user.web.controller.GithubFallbackRestController
